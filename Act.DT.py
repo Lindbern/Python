@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report
 #data processing
 
 data = pd.read_csv("SkyServer.csv")
-#blalba
+
 # No nan values
 data.fillna(0, inplace=True) # @alec can i use this aswell?
 
