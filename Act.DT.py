@@ -34,7 +34,9 @@ decision_tree = DecisionTreeClassifier(criterion='entropy')
 decision_tree.fit(trainfeatures, traintarget)
 
 #plotting the tree
-tree.plot_tree(decision_tree, feature_names=list(trainfeatures), class_names=traintarget.unique(), filled=True, fontsize=3)
+
+tree.plot_tree(decision_tree, feature_names=list(train_data.drop(
+    'class', axis=1), class_names=traintarget.unique(), filled=True, fontsize=3)
 plt.show()
 
 
