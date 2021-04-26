@@ -1,66 +1,51 @@
 import pandas as pd
 from sklearn import tree
-import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OrdinalEncoder, StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.metrics import classification_report
 
 #data processing
-
 data = pd.read_csv("SkyServer.csv")
 
-# No nan values
-data.fillna(0, inplace=True) # @alec can i use this aswell?
-
-# Dropping columns bc data is not sequential
-data.drop(['objid', 'specobjid'], axis=1, inplace=True)
-
-# Dataset is unbalenced, We have very little QSO the model could struggle classifying this @alec - what is this
-sns.countplot(x='class', data=data)
-
-#split data to test and train
+#split data to test and train data set
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=52)
-data = train_data
-print(data.head())
 
 
-train = train_data['class']
-print(train)
+#features and targets from train data (for tree)
+traintarget = train_data['class']
+trainfeatures = train_data.drop(['class'], axis=1)
 
-traindrop = train_data.drop(['class'], axis=1)
-print(traindrop)
 
-test = test_data['class']
-testdrop = test_data.drop(['class'], axis=1)
+#features and targets from test data (for prediction)
+testtarget= test_data['class']
+testfeatures = test_data.drop(['class'], axis=1)
 
 
 #Scaler
-scaler = StandardScaler().fit(traindrop)
-traindrop = scaler.transform(traindrop)
-testdrop = scaler.transform(testdrop)
+scaler = StandardScaler().fit(trainfeatures)
+trainfeatures = scaler.transform(trainfeatures)
+testfeatures = scaler.transform(testfeatures)
 
 #tree classifier
 decision_tree = DecisionTreeClassifier(criterion='entropy')
-decision_tree.fit(traindrop,train)
+decision_tree.fit(trainfeatures, traintarget)
 
 #plotting the tree
-tree.plot_tree(decision_tree, feature_names=list(traindrop), class_names=data["class"].unique(), filled=True, fontsize=4)
+tree.plot_tree(decision_tree, feature_names=list(trainfeatures), class_names=traintarget.unique(), filled=True, fontsize=3)
 plt.show()
 
 
 #Evaluation & Prediciton
-Test_Prediction = DecisionTreeClassifier.predict(testdrop)
+Test_Prediction = decision_tree.predict(testfeatures)
 
-print(classification_report(test, Test_Prediction))
-cf = confusion_matrix(test, Test_Prediction)
-print(cf)
-print(accuracy_score(test, Test_Prediction) * 100)
+print("classification \n:", classification_report(testtarget, Test_Prediction))
+cf = confusion_matrix(testtarget, Test_Prediction)
+print("confusion matrix:", cf)
+print("accuracy score:", accuracy_score(testtarget, Test_Prediction) * 100)
 
 for i in range(len(Test_Prediction)):
-    print(f"X= {testdrop[i]} \n PREDICTED= {Test_Prediction[i]} \n")
-
-target = data['class'].values
-target = pd.get_dummies(target, drop_first=True)
+    print("features", testfeatures[i])
+    print("Prediction", Test_Prediction[i],"\n")
