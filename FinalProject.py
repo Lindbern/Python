@@ -25,6 +25,16 @@ y_train = train['sign']
 X_test = test['image']
 y_test = test['sign']
 
+X_train = np.asarray(X_train).astype('float32')
+y_train = np.asarray(y_train).astype('float32')
+X_test = np.asarray(X_test).astype('float32')
+y_test = np.asarray(y_test).astype('float32')
+
+X_train = np.expand_dims(X_train, -1)
+y_train = np.expand_dims(y_train, -1)
+X_test = np.expand_dims(X_test, -1)
+y_test = np.expand_dims(y_test, -1)
+
 class_names =["-", "%", "[", "]","+", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 
